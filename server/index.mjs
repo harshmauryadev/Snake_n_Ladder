@@ -1,9 +1,9 @@
 import express from "express";
-import { createServer } from "http";
+import { createServer } from "node:http";
 import { Server } from "socket.io";
 
 const app = express();
-const server = createServer(app);
+const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: "*",
@@ -11,14 +11,15 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  console.log("A user connected");
+  console.log("a user connected");
   socket.emit("info", "hello from server");
-  socket.on("info", (msgg) => console.log(msgg));
-});
-
-socket.on("disconnect", (msg) => {
-  console.log(msg);
-  console.log(socket.id);
+  socket.on("info", (msg) => {
+    console.log(msg);
+  });
+  socket.on("disconnect", (msg) => {
+    console.log(msg);
+    console.log(socket.id);
+  });
 });
 
 httpServer.listen(5000, (e) => {

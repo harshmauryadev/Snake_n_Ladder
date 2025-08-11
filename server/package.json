@@ -1,10 +1,10 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
-    "dev": "nodemon",
-    "start": "nodemon index.mjs"
+    "dev": "nodemon index.mjs",
+    "start": "node index.mjs"
   },
   "dependencies": {
     "express": "^5.1.0",

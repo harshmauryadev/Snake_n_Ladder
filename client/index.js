@@ -1,27 +1,31 @@
-const socket = io("ws://192.168.1.43:5000");
+const socket = io('ws://192.168.1.36:5000')
 
-const turnEle = document.getElementById("turn");
-turnEle.innerHTML = " ";
-const diceValueEle = document.getElementById("dice");
-diceValueEle.innerHTML = "";
+const turnEle = document.getElementById("turn")
+turnEle.innerHTML = ' '
+const diceValueEle = document.getElementById("dice")
+diceValueEle.innerHTML = ''
 
-const userName = prompt("enter your name");
-socket.on("info", (msg) => {
-  console.log(msg);
-  console.log(`Name: ${userName}, ID : ${socket.id}`);
-});
-socket.on("game", ({ diceValue, clients, turn }) => {
-  console.log(clients, turn, socket.id);
+const userName = prompt("enter your name")
+const pwanValue = prompt("enter number 0: blue, 1:yellow, 2:red, 3: green")
+const colorList = ["blue", "yellow", "red", "green"]
+const pwanColor = colorList[pwanValue]
+socket.on('info', (msg) => {
+  console.log(msg)
+  console.log(`Name: ${userName}, ID : ${socket.id}`)
+})
+socket.on('game', ({ diceValue, clients, turn }) => {
+  console.log(clients, turn, socket.id)
   if (turn === socket.id) {
-    turnEle.innerHTML = "Your Turn";
+    turnEle.innerHTML = 'Your Turn'
   } else {
-    turnEle.innerHTML = "";
+    const c = clients.filter((e) => e.socketId == turn)
+    turnEle.innerHTML = `Turn : ${c[0].name}`
   }
-  diceValueEle.innerHTML = diceValue ? diceValue : "";
-  draw(clients);
-});
+  diceValueEle.innerHTML = diceValue ? diceValue : ''
+  draw(clients)
+})
 
-socket.emit("info", userName);
+socket.emit('info', userName)
 
 const path = {
   1: { x: 0, y: 9 },
@@ -124,73 +128,39 @@ const path = {
   98: { x: 2, y: 0 },
   99: { x: 1, y: 0 },
   100: { x: 0, y: 0 },
-};
+}
 
-const snake = [
-  { h: 18, t: 1 },
-  { h: 8, t: 4 },
-  { h: 26, t: 10 },
-  { h: 39, t: 5 },
-  { h: 51, t: 6 },
-  { h: 54, t: 36 },
-  { h: 56, t: 1 },
-  { h: 60, t: 23 },
-  { h: 75, t: 28 },
-  { h: 83, t: 45 },
-  { h: 85, t: 59 },
-  { h: 90, t: 48 },
-  { h: 92, t: 25 },
-  { h: 97, t: 87 },
-  { h: 99, t: 63 },
-];
-
-const ladder = [
-  { from: 3, to: 20 },
-  { from: 6, to: 14 },
-  { from: 11, to: 28 },
-  { from: 15, to: 34 },
-  { from: 17, to: 74 },
-  { from: 22, to: 37 },
-  { from: 38, to: 59 },
-  { from: 49, to: 67 },
-  { from: 57, to: 76 },
-  { from: 61, to: 78 },
-  { from: 73, to: 86 },
-  { from: 81, to: 98 },
-  { from: 88, to: 91 },
-];
-
-const canvasSize = 600;
-const blockSize = canvasSize / 10;
+const canvasSize = 600
+const blockSize = canvasSize / 10
 
 const webpImage = new Image();
-webpImage.src = "../map.png"; // Replace with your WebP image path
-const canvasEle = document.getElementById("canvas");
-canvasEle.height = canvasSize;
-canvasEle.width = canvasSize;
-const ctx = canvasEle.getContext("2d");
+webpImage.src = '../map.png'; // Replace with your WebP image path
+const canvasEle = document.getElementById("canvas")
+canvasEle.height = canvasSize
+canvasEle.width = canvasSize
+const ctx = canvasEle.getContext("2d")
 
 webpImage.onload = () => {
   ctx.drawImage(webpImage, 0, 0, canvasSize, canvasSize); // Example with custom position and size
 };
 
-const playBtnEle = document.getElementById("play");
+const playBtnEle = document.getElementById("play")
 // playBtnEle.disabled = true
-playBtnEle.style.backgroundColor = "#fcc";
-playBtnEle.style.color = "#000";
-playBtnEle.addEventListener("click", () => {
-  socket.emit("play", "");
-});
+playBtnEle.style.backgroundColor = "#fcc"
+playBtnEle.style.color = "#000"
+playBtnEle.addEventListener('click', () => {
+  socket.emit("play", "")
+})
 
 const drawCircle = (x, y, r, fillColor) => {
   ctx.beginPath();
   ctx.arc(x, y, r, 0, 2 * Math.PI);
   ctx.fillStyle = fillColor;
   ctx.fill();
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "blue";
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "white";
   ctx.stroke();
-};
+}
 
 const drawLine = (x1, y1, x2, y2) => {
   ctx.beginPath();
@@ -198,31 +168,30 @@ const drawLine = (x1, y1, x2, y2) => {
   ctx.lineTo(x2, y2);
   ctx.lineWidth = 1;
   ctx.stroke();
-};
+}
 
 const drawPawn = (pathNum, color) => {
-  drawCircle(
-    blockSize / 2 + blockSize * path[pathNum].x,
-    blockSize / 2 + blockSize * path[pathNum].y,
-    blockSize / 2 - blockSize / 6,
-    color
-  );
-};
+  drawCircle(blockSize / 2 + blockSize * path[pathNum].x, blockSize / 2 + blockSize * path[pathNum].y, blockSize / 2 - blockSize / 6, color)
+}
 
 // y axis line draw
 for (let i = 1; i < 10; i++) {
-  drawLine(blockSize * i, 0, blockSize * i, canvasSize);
+  drawLine(blockSize * i, 0, blockSize * i, canvasSize)
 }
 for (let i = 1; i < 10; i++) {
-  drawLine(0, blockSize * i, canvasSize, blockSize * i);
+  drawLine(0, blockSize * i, canvasSize, blockSize * i)
 }
 
 const draw = (clients) => {
+
   // clear screen
-  ctx.clearRect(0, 0, canvasSize, canvasSize);
+  ctx.clearRect(0, 0, canvasSize, canvasSize)
   ctx.drawImage(webpImage, 0, 0, canvasSize, canvasSize); // Example with custom position and size
   // draw pawn
   clients.forEach((e) => {
-    drawPawn(e.position, "green");
-  });
-};
+    drawPawn(e.position, "cyan")
+    if (e.socketId === socket.id) {
+      drawPawn(e.position, pwanColor)
+    }
+  })
+}

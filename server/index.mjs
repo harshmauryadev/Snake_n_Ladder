@@ -147,7 +147,11 @@ const isSnakePositionMatch = (position) => {
 };
 
 const updatePosition = (position, diceValue) => {
-  position += diceValue;
+  const newPos = position + diceValue;
+  if (newPos <= 100) {
+    position = newPos;
+  }
+
   let { snakeMatch, t } = isSnakePositionMatch(position);
   let { ladderMatch, to } = isLadderPositionMatch(position);
   while (snakeMatch || ladderMatch) {
@@ -173,8 +177,17 @@ const updatePosition = (position, diceValue) => {
 
 const updateTurn = (index, diceValue) => {
   if (diceValue !== 6) {
-    index = (index + 1) % clients.length;
-    turn = clients[index].socketId;
+    for (let i = 0; i < clients.length; i++) {
+      index = (index + 1) % clients.length;
+      turn = clients[index].socketId;
+      if (clients[index].position >= 100) {
+        // check for position if user has completed the game
+        index = (index + 1) % clients.length;
+        turn = clients[index].socketId;
+      } else {
+        break;
+      }
+    }
   }
   console.log(`Next turn is : ${clients[index].name}, ${turn}`);
   return turn;
